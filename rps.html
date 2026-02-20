@@ -230,14 +230,16 @@
   .modal-overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(10,8,4,0.92); z-index: 200;
-    overflow-y: auto; padding: 20px 16px 40px;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 20px 16px 40px;
   }
-  .modal-overlay.open { display: flex; flex-direction: column; }
+  .modal-overlay.open { display: block; }
   .modal-box {
     background: var(--groove); border: 2px solid var(--amber);
     border-radius: 6px; padding: 24px 20px;
-    width: 100%; max-width: 480px; margin: auto;
+    width: 100%; max-width: 480px; margin: 20px auto;
     box-shadow: 0 0 40px rgba(200,135,10,0.2);
+    position: relative; z-index: 1;
   }
   .modal-title {
     font-family: 'Bebas Neue', sans-serif; font-size: 26px;
@@ -272,8 +274,14 @@
     font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px;
     border: none; border-radius: 3px; cursor: pointer;
     box-shadow: 3px 3px 0 var(--brown); transition: transform 0.1s;
+    touch-action: manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.2);
+    position: relative; z-index: 10;
   }
-  .btn-save:active { transform: translate(1px,1px); }
+  .btn-save:active { transform: translate(1px,1px); background: var(--amber-light); }
+  .btn-cancel {
+    touch-action: manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+    position: relative; z-index: 10;
+  }
   .btn-cancel {
     padding: 15px 18px; background: transparent; color: var(--tan);
     font-family: 'IBM Plex Mono', monospace; font-size: 13px;
@@ -367,7 +375,7 @@
     background: var(--amber); color: var(--dark);
     font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500;
     padding: 11px 22px; border-radius: 3px; opacity: 0; transition: all 0.3s;
-    z-index: 500; white-space: nowrap;
+    z-index: 9999; white-space: nowrap;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
@@ -533,8 +541,8 @@
     </div>
     <div class="field"><label>Valor (R$)</label><input type="number" id="lpValue" placeholder="0.00" step="0.01" min="0"></div>
     <div class="btn-row">
-      <button class="btn-cancel" onclick="closeAddModal()">Cancelar</button>
-      <button class="btn-save" onclick="saveLP()">Salvar Disco</button>
+      <button class="btn-cancel" id="btnCancelLP" type="button">Cancelar</button>
+      <button class="btn-save" id="btnSaveLP" type="button">Salvar Disco</button>
     </div>
   </div>
 </div>
@@ -633,12 +641,25 @@
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function(ev) {
-      currentPhoto = ev.target.result;
-      const img = document.getElementById('photoPreview');
-      img.src = currentPhoto;
-      img.style.display = 'block';
-      document.querySelector('.photo-area svg').style.display = 'none';
-      document.querySelector('.photo-label').style.display = 'none';
+      // Compress image before storing to avoid localStorage size limits
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const MAX = 600;
+        let w = img.width, h = img.height;
+        if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } }
+        else { if (h > MAX) { w = w * MAX / h; h = MAX; } }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        currentPhoto = canvas.toDataURL('image/jpeg', 0.7);
+        const preview = document.getElementById('photoPreview');
+        preview.src = currentPhoto;
+        preview.style.display = 'block';
+        document.querySelector('.photo-area svg').style.display = 'none';
+        document.querySelector('.photo-label').style.display = 'none';
+      };
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
     spinVinyl();
@@ -657,21 +678,54 @@
   function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
 
   function saveLP() {
-    const name = document.getElementById('lpName').value.trim();
-    const artist = document.getElementById('lpArtist').value.trim();
-    const genre = document.getElementById('lpGenre').value;
-    const state = document.getElementById('lpState').value;
-    const value = document.getElementById('lpValue').value;
-    if (!name) { showToast('Informe o nome do LP'); return; }
-    if (!genre) { showToast('Selecione o gênero'); return; }
-    if (!state) { showToast('Selecione o estado'); return; }
-    const lp = { id: Date.now(), name, artist, genre, state, value: parseFloat(value) || 0, photo: currentPhoto, date: new Date().toLocaleDateString('pt-BR') };
+    var name = (document.getElementById('lpName').value || '').trim();
+    var artist = (document.getElementById('lpArtist').value || '').trim();
+    var genre = document.getElementById('lpGenre').value;
+    var state = document.getElementById('lpState').value;
+    var value = document.getElementById('lpValue').value;
+
+    if (!name) { alert('Informe o nome do LP'); return; }
+    if (!genre) { alert('Selecione o genero'); return; }
+    if (!state) { alert('Selecione o estado'); return; }
+
+    var lp = {
+      id: Date.now(),
+      name: name,
+      artist: artist,
+      genre: genre,
+      state: state,
+      value: parseFloat(value) || 0,
+      photo: currentPhoto,
+      date: new Date().toLocaleDateString('pt-BR')
+    };
+
     collection.unshift(lp);
-    save();
-    closeAddModal();
-    updateStats();
-    showToast('Disco catalogado! 🎵');
-    spinVinyl();
+
+    var saved = false;
+    try {
+      localStorage.setItem('vinyl_collection', JSON.stringify(collection));
+      saved = true;
+    } catch(e) {
+      try {
+        var fallback = collection.map(function(l) {
+          return l.id === lp.id ? Object.assign({}, l, {photo: null}) : l;
+        });
+        localStorage.setItem('vinyl_collection', JSON.stringify(fallback));
+        collection = fallback;
+        saved = true;
+      } catch(e2) {
+        collection.shift();
+        alert('Erro ao salvar: armazenamento cheio');
+        return;
+      }
+    }
+
+    if (saved) {
+      closeAddModal();
+      updateStats();
+      showToast('Disco catalogado!');
+      spinVinyl();
+    }
   }
 
   function stateClass(s) {
@@ -758,6 +812,20 @@
     v.classList.add('spinning');
     setTimeout(() => v.classList.remove('spinning'), 3000);
   }
+
+  // Wire buttons with addEventListener for reliable mobile touch
+  document.addEventListener('DOMContentLoaded', function() {
+    var saveBtn = document.getElementById('btnSaveLP');
+    var cancelBtn = document.getElementById('btnCancelLP');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function(e) { e.stopPropagation(); saveLP(); });
+      saveBtn.addEventListener('touchend', function(e) { e.preventDefault(); e.stopPropagation(); saveLP(); });
+    }
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function(e) { e.stopPropagation(); closeAddModal(); });
+      cancelBtn.addEventListener('touchend', function(e) { e.preventDefault(); e.stopPropagation(); closeAddModal(); });
+    }
+  });
 
   checkSession();
 </script>
