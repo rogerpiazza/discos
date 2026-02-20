@@ -64,7 +64,7 @@
     opacity: 0.3; margin: 18px 0; border-radius: 2px;
   }
 
-  .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
   .stat-card {
     background: var(--groove); border: 1px solid rgba(200,135,10,0.25);
     border-radius: 4px; padding: 12px 8px; text-align: center;
@@ -194,10 +194,7 @@
       <div class="stat-num" id="stat-genres">0</div>
       <div class="stat-label">Gêneros</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-value">R$0</div>
-      <div class="stat-label">Valor Total</div>
-    </div>
+
   </div>
 
   <div class="section-title">Explorar Coleção</div>
@@ -257,10 +254,7 @@
     document.getElementById('stat-total').textContent = collection.length;
     const genres = new Set(collection.map(l => l.genre).filter(Boolean));
     document.getElementById('stat-genres').textContent = genres.size;
-    const total = collection.reduce((s, l) => s + (parseFloat(l.value) || 0), 0);
-    document.getElementById('stat-value').textContent = total >= 1000
-      ? 'R$' + (total/1000).toFixed(1) + 'k'
-      : 'R$' + total.toFixed(0);
+
   }
 
   function stateClass(s) {
