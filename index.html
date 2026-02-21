@@ -116,6 +116,7 @@
   <div class="result-count" id="resultCount"></div>
   <div id="connectingMsg" class="connecting">Carregando coleção...</div>
   <div class="lp-grid" id="lpGrid"></div>
+  <div id="loadMoreSentinel" style="display:none;justify-content:center;padding:24px 0"><div class="load-spinner"></div></div>
   <div id="emptyState" class="empty-state" style="display:none">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
     <h3>Coleção Vazia</h3><p>Nenhum disco encontrado.</p>
@@ -306,17 +307,21 @@
   }
 
   // Infinite scroll with IntersectionObserver
-  var sentinel = document.getElementById('loadMoreSentinel');
-  var observer = new IntersectionObserver(function(entries) {
-    if (entries[0].isIntersecting && !isLoadingMore) {
-      isLoadingMore = true;
-      setTimeout(function() {
-        renderPage();
-        isLoadingMore = false;
-      }, 150);
-    }
-  }, { rootMargin: '200px' });
-  observer.observe(sentinel);
+  function initObserver() {
+    var sentinel = document.getElementById('loadMoreSentinel');
+    if (!sentinel) return;
+    var observer = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting && !isLoadingMore) {
+        isLoadingMore = true;
+        setTimeout(function() {
+          renderPage();
+          isLoadingMore = false;
+        }, 200);
+      }
+    }, { rootMargin: '300px' });
+    observer.observe(sentinel);
+  }
+  initObserver();
 
   function openDetail(key) {
     var lp = collection.find(function(l){ return l._key === key; });

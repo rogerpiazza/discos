@@ -730,13 +730,18 @@
   }
 
   // Infinite scroll
-  var rpsObserver = new IntersectionObserver(function(entries) {
-    if (entries[0].isIntersecting && !isLoadingMore) {
-      isLoadingMore = true;
-      setTimeout(function() { renderPage(); isLoadingMore = false; }, 150);
-    }
-  }, { rootMargin: '200px' });
-  rpsObserver.observe(document.getElementById('loadMoreSentinel'));
+  function initRpsObserver() {
+    var sentinel = document.getElementById('loadMoreSentinel');
+    if (!sentinel) return;
+    var rpsObserver = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting && !isLoadingMore) {
+        isLoadingMore = true;
+        setTimeout(function() { renderPage(); isLoadingMore = false; }, 200);
+      }
+    }, { rootMargin: '300px' });
+    rpsObserver.observe(sentinel);
+  }
+  initRpsObserver();
 
   // DETAIL
   function openDetail(key) {
