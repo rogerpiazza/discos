@@ -107,6 +107,8 @@
   .badge-state-regular { background: rgba(180,120,10,0.2); color: #e0bc60; border: 1px solid rgba(180,120,10,0.4); }
   .badge-state-ruim { background: rgba(180,30,10,0.2); color: #e08060; border: 1px solid rgba(180,30,10,0.4); }
   .lp-price { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--amber-light); }
+  .lp-desc { font-size: 11px; color: var(--tan); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; opacity: 0.85; }
+  .lp-date { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: rgba(212,180,131,0.5); margin-top: 3px; }
   .empty-state { text-align: center; padding: 50px 20px; color: var(--tan); }
   .empty-state svg { width: 70px; height: 70px; opacity: 0.3; margin-bottom: 14px; }
   .empty-state h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--amber); margin-bottom: 6px; }
@@ -125,6 +127,11 @@
   .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 11px 8px; background: none; border: none; color: var(--tan); font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; touch-action: manipulation; }
   .nav-btn.active { color: var(--amber-light); }
   .nav-btn svg { width: 20px; height: 20px; }
+  .photo-zoom-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9998; align-items: center; justify-content: center; }
+  .photo-zoom-overlay.open { display: flex; }
+  .photo-zoom-overlay img { max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 4px; }
+  .photo-zoom-close { position: absolute; top: 16px; right: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 22px; color: var(--tan); background: none; border: none; cursor: pointer; z-index: 1; }
+  .detail-photo img { cursor: zoom-in; }
   .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--amber); color: var(--dark); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; padding: 11px 22px; border-radius: 3px; opacity: 0; transition: all 0.3s; z-index: 9999; white-space: nowrap; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
@@ -176,7 +183,7 @@
       <div class="filter-bar">
         <select class="filter-select" id="filterGenre" onchange="renderCollection()">
           <option value="">Todos os Gêneros</option>
-          <option>Rock</option><option>MPB</option><option>Samba</option><option>Jazz</option><option>Blues</option><option>Soul/Funk</option><option>Pop</option><option>Clássico</option><option>Eletrônico</option><option>Reggae</option><option>Outro</option>
+          <option>Rock</option><option>MPB</option><option>Samba</option><option>Jazz</option><option>Blues</option><option>Soul/Funk</option><option>Pop</option><option>Clássico</option><option>Eletrônico</option><option>Reggae</option><option>Anos 80</option><option>Hip-Hop</option><option>Coletânea</option><option>Gaúcha</option><option>Outro</option>
         </select>
         <select class="filter-select" id="filterState" onchange="renderCollection()">
           <option value="">Todos os Estados</option>
@@ -263,7 +270,7 @@
     <div class="field"><label>Nome do LP / Álbum</label><input type="text" id="editName" autocomplete="off"></div>
     <div class="field"><label>Artista / Banda</label><input type="text" id="editArtist" autocomplete="off"></div>
     <div class="field"><label>Gênero</label>
-      <select id="editGenre"><option value="">Selecione...</option><option>Rock</option><option>MPB</option><option>Samba</option><option>Jazz</option><option>Blues</option><option>Soul/Funk</option><option>Pop</option><option>Clássico</option><option>Eletrônico</option><option>Reggae</option><option>Outro</option></select>
+      <select id="editGenre"><option value="">Selecione...</option><option>Rock</option><option>MPB</option><option>Samba</option><option>Jazz</option><option>Blues</option><option>Soul/Funk</option><option>Pop</option><option>Clássico</option><option>Eletrônico</option><option>Reggae</option><option>Anos 80</option><option>Hip-Hop</option><option>Coletânea</option><option>Gaúcha</option><option>Outro</option></select>
     </div>
     <div class="field"><label>Estado de Conservação</label>
       <select id="editState"><option value="">Selecione...</option><option>Ótimo</option><option>Bom</option><option>Regular</option><option>Ruim</option></select>
@@ -277,6 +284,10 @@
   </div>
 </div>
 
+<div class="photo-zoom-overlay" id="photoZoom">
+  <button class="photo-zoom-close" id="photoZoomClose">✕</button>
+  <img id="photoZoomImg" src="" alt="">
+</div>
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -523,7 +534,7 @@
     return 'badge-state-ruim';
   }
 
-  function renderCollection() {
+  window.renderCollection = function() {
     var search = document.getElementById('searchInput').value.toLowerCase();
     var genre = document.getElementById('filterGenre').value;
     var state = document.getElementById('filterState').value;
@@ -551,17 +562,20 @@
         '</div><div class="lp-info"><div>' +
         '<div class="lp-title">' + lp.name + '</div>' +
         (lp.artist ? '<div class="lp-artist">' + lp.artist + '</div>' : '') +
+        (lp.desc ? '<div class="lp-desc">' + lp.desc + '</div>' : '') +
         '</div><div class="lp-meta">' +
         '<span class="badge badge-genre">' + lp.genre + '</span>' +
         '<span class="badge ' + stateClass(lp.state) + '">' + lp.state + '</span>' +
         (lp.value ? '<span class="lp-price">R$ ' + lp.value.toFixed(2) + '</span>' : '') +
-        '</div></div></div>';
+        '</div>' +
+        (lp.date ? '<div class="lp-date">' + lp.date + '</div>' : '') +
+        '</div></div>';
     }).join('');
 
     grid.querySelectorAll('.lp-card').forEach(function(card) {
       card.addEventListener('click', function(){ openDetail(card.dataset.key); });
     });
-  }
+  };
 
   // DETAIL
   function openDetail(key) {
@@ -723,6 +737,20 @@
       btn.disabled = false;
     });
   }
+
+  // PHOTO ZOOM
+  document.getElementById('photoZoomClose').addEventListener('click', closeZoom);
+  document.getElementById('photoZoom').addEventListener('click', function(e){
+    if (e.target === this) closeZoom();
+  });
+  function closeZoom() { document.getElementById('photoZoom').classList.remove('open'); }
+
+  document.getElementById('detailPhoto').addEventListener('click', function() {
+    var img = this.querySelector('img');
+    if (!img) return;
+    document.getElementById('photoZoomImg').src = img.src;
+    document.getElementById('photoZoom').classList.add('open');
+  });
 
   // UTILS
   function showToast(msg) {
