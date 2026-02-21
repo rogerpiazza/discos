@@ -77,6 +77,7 @@
   .detail-photo img { cursor: zoom-in; }
   .btn-close { width: 100%; margin-top: 20px; padding: 14px; background: transparent; color: var(--tan); font-family: 'IBM Plex Mono', monospace; font-size: 13px; border: 1px solid rgba(200,135,10,0.3); border-radius: 3px; cursor: pointer; touch-action: manipulation; }
 
+  .load-spinner { width: 28px; height: 28px; border: 3px solid rgba(200,135,10,0.2); border-top-color: var(--amber); border-radius: 50%; animation: spin 0.8s linear infinite; }
   .connecting { text-align: center; padding: 40px 20px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--tan); }
 </style>
 </head>
@@ -223,38 +224,60 @@
     return 'badge-state-ruim';
   }
 
+    var PAGE_SIZE = 10;
+  var currentPage = 0;
+  var filteredList = [];
+  var isLoadingMore = false;
+
   window.renderCollection = function() {
     var search = document.getElementById('searchInput').value.toLowerCase();
     var genre = document.getElementById('filterGenre').value;
     var state = document.getElementById('filterState').value;
     var sort = document.getElementById('filterSort').value;
 
-    var list = collection.filter(function(lp) {
+    filteredList = collection.filter(function(lp) {
       var matchName = lp.name.toLowerCase().includes(search) || (lp.artist||'').toLowerCase().includes(search);
       return matchName && (!genre || lp.genre === genre) && (!state || lp.state === state);
     });
 
-    if (sort === 'name') list.sort(function(a,b){ return a.name.localeCompare(b.name); });
-    else if (sort === 'price-asc') list.sort(function(a,b){ return a.value - b.value; });
-    else if (sort === 'price-desc') list.sort(function(a,b){ return b.value - a.value; });
+    if (sort === 'name') filteredList.sort(function(a,b){ return a.name.localeCompare(b.name); });
+    else if (sort === 'price-asc') filteredList.sort(function(a,b){ return a.value - b.value; });
+    else if (sort === 'price-desc') filteredList.sort(function(a,b){ return b.value - a.value; });
 
     var grid = document.getElementById('lpGrid');
     var empty = document.getElementById('emptyState');
     var count = document.getElementById('resultCount');
 
-    if (!list.length) {
+    if (!filteredList.length) {
       grid.innerHTML = '';
+      document.getElementById('loadMoreSentinel').style.display = 'none';
       empty.style.display = collection.length ? 'block' : 'none';
       count.textContent = '';
       return;
     }
-    empty.style.display = 'none';
-    count.textContent = list.length + ' disco' + (list.length !== 1 ? 's' : '') + ' encontrado' + (list.length !== 1 ? 's' : '');
 
-    grid.innerHTML = list.map(function(lp) {
-      return '<div class="lp-card" data-key="' + lp._key + '">' +
+    empty.style.display = 'none';
+    count.textContent = filteredList.length + ' disco' + (filteredList.length !== 1 ? 's' : '') + ' encontrado' + (filteredList.length !== 1 ? 's' : '');
+
+    // Reset and render first page
+    currentPage = 0;
+    grid.innerHTML = '';
+    renderPage();
+  };
+
+  function renderPage() {
+    var grid = document.getElementById('lpGrid');
+    var start = currentPage * PAGE_SIZE;
+    var end = Math.min(start + PAGE_SIZE, filteredList.length);
+    var slice = filteredList.slice(start, end);
+
+    slice.forEach(function(lp) {
+      var card = document.createElement('div');
+      card.className = 'lp-card';
+      card.dataset.key = lp._key;
+      card.innerHTML =
         '<div class="lp-thumb">' +
-        (lp.photo ? '<img src="' + lp.photo + '" alt="' + lp.name + '">' :
+        (lp.photo ? '<img src="' + lp.photo + '" alt="' + lp.name + '" loading="lazy">' :
           '<div class="lp-thumb-placeholder"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(200,135,10,0.25)" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>') +
         '</div><div class="lp-info"><div>' +
         '<div class="lp-title">' + lp.name + '</div>' +
@@ -267,12 +290,33 @@
         '</div>' +
         (lp.date ? '<div class="lp-date">' + lp.date + '</div>' : '') +
         '</div></div>';
-    }).join('');
-
-    grid.querySelectorAll('.lp-card').forEach(function(card) {
-      card.addEventListener('click', function(){ openDetail(card.dataset.key); });
+      card.addEventListener('click', function(){ openDetail(lp._key); });
+      grid.appendChild(card);
     });
-  };
+
+    currentPage++;
+
+    // Show/hide sentinel
+    var sentinel = document.getElementById('loadMoreSentinel');
+    if (end >= filteredList.length) {
+      sentinel.style.display = 'none';
+    } else {
+      sentinel.style.display = 'flex';
+    }
+  }
+
+  // Infinite scroll with IntersectionObserver
+  var sentinel = document.getElementById('loadMoreSentinel');
+  var observer = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting && !isLoadingMore) {
+      isLoadingMore = true;
+      setTimeout(function() {
+        renderPage();
+        isLoadingMore = false;
+      }, 150);
+    }
+  }, { rootMargin: '200px' });
+  observer.observe(sentinel);
 
   function openDetail(key) {
     var lp = collection.find(function(l){ return l._key === key; });
