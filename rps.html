@@ -573,7 +573,7 @@
     document.getElementById('s-views').textContent = '...';
     document.getElementById('s-today').textContent = '...';
     document.getElementById('s-week').textContent = '...';
-    document.getElementById('topDiscsGrid').innerHTML = '<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--tan);padding:10px 0">Carregando...</div>';
+    document.getElementById("topDiscsGrid").innerHTML = '<div style="padding:10px 0;font-size:12px;color:var(--tan)">Carregando...</div>';
     document.getElementById('accessChart').innerHTML = '';
     var statsRef = ref(db, 'stats');
     get(statsRef).then(function(snapshot) {
@@ -608,7 +608,7 @@
       var maxCount = discArr.length ? (discArr[0].count || 1) : 1;
       var topGrid = document.getElementById('topDiscsGrid');
       if (!discArr.length) {
-        topGrid.innerHTML = '<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--tan);padding:10px 0">Nenhuma visualização ainda</div>';
+        topGrid.innerHTML = "<div style='padding:10px 0;font-size:12px;color:var(--tan)'>Nenhuma visualizacao ainda</div>";
       } else {
         topGrid.innerHTML = discArr.map(function(d, i) {
           var pct = Math.round((d.count / maxCount) * 100);
@@ -646,7 +646,7 @@
       document.getElementById('s-views').textContent = '—';
       document.getElementById('s-today').textContent = '—';
       document.getElementById('s-week').textContent = '—';
-      document.getElementById('topDiscsGrid').innerHTML = '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;color:#e08060;padding:10px 0">Erro: ' + (err ? err.message : 'sem permissao') + '</div>';
+      document.getElementById("topDiscsGrid").innerHTML = "<div style='padding:10px 0;font-size:12px;color:#e08060'>Erro ao carregar. Verifique as regras do Firebase.</div>";
     });
   }
 
