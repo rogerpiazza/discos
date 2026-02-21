@@ -73,6 +73,9 @@
   .field input, .field select { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(200,135,10,0.4); border-radius: 3px; color: var(--cream); font-family: 'Playfair Display', serif; font-size: 16px; padding: 11px 13px; outline: none; }
   .field input:focus, .field select:focus { border-color: var(--amber-light); }
   .field select option { background: var(--groove); }
+  .field textarea { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(200,135,10,0.4); border-radius: 3px; color: var(--cream); font-family: 'Playfair Display', serif; font-size: 15px; padding: 11px 13px; outline: none; resize: none; }
+  .field textarea:focus { border-color: var(--amber-light); }
+  .field textarea::placeholder { color: rgba(212,180,131,0.35); font-style: italic; }
   .btn-row { display: flex; gap: 10px; margin-top: 22px; }
   .btn-save { flex: 1; padding: 15px; background: var(--amber); color: var(--dark); font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; border: none; border-radius: 3px; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.2); position: relative; z-index: 10; }
   .btn-save:active { background: var(--amber-light); }
@@ -220,6 +223,7 @@
       <select id="lpState"><option value="">Selecione...</option><option>Ótimo</option><option>Bom</option><option>Regular</option><option>Ruim</option></select>
     </div>
     <div class="field"><label>Valor (R$)</label><input type="number" id="lpValue" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="field"><label>Descrição</label><textarea id="lpDesc" placeholder="Informações adicionais..." maxlength="200" rows="3"></textarea></div>
     <div class="btn-row">
       <button class="btn-cancel" id="btnCancelLP" type="button">Cancelar</button>
       <button class="btn-save" id="btnSaveLP" type="button">Salvar Disco</button>
@@ -237,6 +241,7 @@
     <div class="detail-row"><span class="label">Gênero</span><span id="detailGenre"></span></div>
     <div class="detail-row"><span class="label">Estado</span><span id="detailState"></span></div>
     <div class="detail-row" style="border:none"><span class="label">Valor</span><span id="detailValue" style="font-family:'Bebas Neue';font-size:20px;color:var(--amber-light)"></span></div>
+    <div id="detailDescRow" class="detail-row" style="border:none;display:none;flex-direction:column;align-items:flex-start;gap:4px"><span class="label">Descrição</span><span id="detailDesc" style="font-size:13px;line-height:1.5;color:var(--cream)"></span></div>
     <button class="btn-edit" id="detailEditBtn" type="button">✏ Editar Disco</button>
     <button class="btn-delete" id="detailDeleteBtn" type="button">Remover da Coleção</button>
     <div class="btn-row" style="margin-top:10px">
@@ -264,6 +269,7 @@
       <select id="editState"><option value="">Selecione...</option><option>Ótimo</option><option>Bom</option><option>Regular</option><option>Ruim</option></select>
     </div>
     <div class="field"><label>Valor (R$)</label><input type="number" id="editValue" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="field"><label>Descrição</label><textarea id="editDesc" placeholder="Informações adicionais..." maxlength="200" rows="3"></textarea></div>
     <div class="btn-row">
       <button class="btn-cancel" id="btnCancelEdit" type="button">Cancelar</button>
       <button class="btn-save" id="btnSaveEdit" type="button">Salvar Edição</button>
@@ -418,7 +424,7 @@
     document.getElementById('photoPreview').style.display = 'none';
     document.querySelector('.photo-area svg').style.display = '';
     document.querySelector('.photo-label').style.display = '';
-    ['lpName','lpArtist','lpValue'].forEach(function(id){ document.getElementById(id).value = ''; });
+    ['lpName','lpArtist','lpValue','lpDesc'].forEach(function(id){ document.getElementById(id).value = ''; });
     ['lpGenre','lpState'].forEach(function(id){ document.getElementById(id).selectedIndex = 0; });
     document.getElementById('addModal').classList.add('open');
     spinVinyl();
@@ -447,9 +453,11 @@
     btn.innerHTML = '<span class="spinner"></span>Salvando...';
     btn.disabled = true;
 
+    var desc = (document.getElementById('lpDesc').value || '').trim();
     var lp = {
       name: name, artist: artist, genre: genre, state: state,
       value: parseFloat(value) || 0,
+      desc: desc || null,
       photo: currentPhoto || null,
       date: new Date().toLocaleDateString('pt-BR'),
       timestamp: Date.now()
@@ -553,6 +561,10 @@
     document.getElementById('detailGenre').textContent = lp.genre;
     document.getElementById('detailState').textContent = lp.state;
     document.getElementById('detailValue').textContent = lp.value ? 'R$ ' + lp.value.toFixed(2) : '—';
+    var descRow = document.getElementById('detailDescRow');
+    var descEl = document.getElementById('detailDesc');
+    if (lp.desc) { descEl.textContent = lp.desc; descRow.style.display = 'flex'; }
+    else { descRow.style.display = 'none'; }
     document.getElementById('detailModal').classList.add('open');
   }
 
@@ -584,6 +596,7 @@
     document.getElementById('editName').value = lp.name || '';
     document.getElementById('editArtist').value = lp.artist || '';
     document.getElementById('editValue').value = lp.value || '';
+    document.getElementById('editDesc').value = lp.desc || '';
 
     var genreEl = document.getElementById('editGenre');
     for (var i = 0; i < genreEl.options.length; i++) {
@@ -673,9 +686,11 @@
     var lp = collection.find(function(l){ return l._key === currentDetailKey; });
     var photoToSave = editPhoto !== null ? editPhoto : (lp ? lp.photo || null : null);
 
+    var editDesc = (document.getElementById('editDesc').value || '').trim();
     var updates = {
       name: name, artist: artist, genre: genre, state: state,
       value: parseFloat(value) || 0,
+      desc: editDesc || null,
       photo: photoToSave,
       date: lp ? lp.date : new Date().toLocaleDateString('pt-BR'),
       timestamp: lp ? lp.timestamp : Date.now()
