@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>VinylVault — Admin</title>
+<title>Vinis do Roger — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -137,7 +137,7 @@
 <div class="login-wrap" id="loginWrap">
   <div class="login-box">
     <div class="login-vinyl"></div>
-    <div class="login-title">VinylVault</div>
+    <div class="login-title">Vinis do Roger</div>
     <div class="login-sub">// Painel Admin</div>
     <div class="login-error" id="loginError">Usuário ou senha incorretos</div>
     <div class="login-field"><label>Usuário</label><input type="text" id="inputUser" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
@@ -149,7 +149,7 @@
 <!-- APP -->
 <div class="app" id="appWrap">
   <header class="header">
-    <div class="header-logo">VinylVault<span>// Admin</span></div>
+    <div class="header-logo">Vinis do Roger<span>// Admin</span></div>
     <div class="header-right">
       <div class="vinyl-sm" id="vinylDisc"></div>
       <button class="btn-logout" id="btnLogout" type="button">Sair</button>
@@ -281,7 +281,7 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getDatabase, ref, push, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+  import { getDatabase, ref, push, set, get, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyDoL98bz6nUWdFMALbLC8EtLegM98M0MTk",
@@ -297,15 +297,13 @@
   const db = getDatabase(fbApp);
   const discsRef = ref(db, 'discos');
 
-  const ADMIN_USER = 'rps';
-  const ADMIN_PASS = 'Paranga@mirro590';
   const SESSION_KEY = 'vv_admin_ok';
 
   let collection = [];
   let currentPhoto = null;
   let currentDetailKey = null;
 
-  // AUTH
+  // AUTH — credentials fetched from Firebase, never stored in code
   function checkSession() {
     if (sessionStorage.getItem(SESSION_KEY) === '1') showApp();
   }
@@ -317,14 +315,31 @@
   function doLogin() {
     var u = document.getElementById('inputUser').value.trim();
     var p = document.getElementById('inputPass').value;
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-      sessionStorage.setItem(SESSION_KEY, '1');
-      document.getElementById('loginError').style.display = 'none';
-      showApp();
-    } else {
-      document.getElementById('loginError').style.display = 'block';
-      document.getElementById('inputPass').value = '';
-    }
+    if (!u || !p) { document.getElementById('loginError').style.display = 'block'; return; }
+
+    var btn = document.getElementById('btnLogin');
+    btn.textContent = 'Verificando...';
+    btn.disabled = true;
+
+    // Fetch credentials from Firebase at runtime
+    var configRef = ref(db, 'config/admin');
+    get(configRef).then(function(snapshot) {
+      var data = snapshot.val();
+      if (data && u === data.user && p === data.pass) {
+        sessionStorage.setItem(SESSION_KEY, '1');
+        document.getElementById('loginError').style.display = 'none';
+        showApp();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('inputPass').value = '';
+      }
+      btn.textContent = 'Entrar';
+      btn.disabled = false;
+    }).catch(function() {
+      alert('Erro de conexao. Verifique sua internet.');
+      btn.textContent = 'Entrar';
+      btn.disabled = false;
+    });
   }
 
   document.getElementById('btnLogout').addEventListener('click', doLogout);
