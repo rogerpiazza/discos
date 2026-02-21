@@ -7,319 +7,92 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cream: #f5efe0;
-    --dark: #1a1208;
-    --brown: #3d2b0f;
-    --amber: #c8870a;
-    --amber-light: #f0a830;
-    --groove: #2a1e0a;
-    --red: #b03010;
-    --tan: #d4b483;
-    --paper: #ede4ce;
+    --cream: #f5efe0; --dark: #1a1208; --brown: #3d2b0f;
+    --amber: #c8870a; --amber-light: #f0a830; --groove: #2a1e0a;
+    --red: #b03010; --tan: #d4b483;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--dark);
-    color: var(--cream);
-    font-family: 'Playfair Display', serif;
-    min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse at 20% 50%, #2d1a05 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, #1f1505 0%, transparent 50%),
-      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
-  }
+  body { background: var(--dark); color: var(--cream); font-family: 'Playfair Display', serif; min-height: 100vh; background-image: radial-gradient(ellipse at 20% 50%, #2d1a05 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #1f1505 0%, transparent 50%), repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px); }
+
+  .loading-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--amber-light); z-index: 9999; transition: width 0.3s; width: 0; }
 
   /* LOGIN */
-  .login-wrap {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .login-box {
-    background: var(--groove);
-    border: 2px solid var(--amber);
-    border-radius: 8px;
-    padding: 40px 28px;
-    width: 100%;
-    max-width: 360px;
-    box-shadow: 0 0 60px rgba(200,135,10,0.15);
-    text-align: center;
-  }
-  .login-vinyl {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #111 30%, #222 31%, #222 40%, #111 41%, #111 50%, #2a2a2a 51%, #1a1a1a 70%, #111 71%);
-    border: 3px solid var(--amber);
-    margin: 0 auto 20px;
-    animation: spin 6s linear infinite;
-    box-shadow: 0 0 20px rgba(200,135,10,0.3);
-  }
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .login-box { background: var(--groove); border: 2px solid var(--amber); border-radius: 8px; padding: 40px 28px; width: 100%; max-width: 360px; box-shadow: 0 0 60px rgba(200,135,10,0.15); text-align: center; }
+  .login-vinyl { width: 72px; height: 72px; border-radius: 50%; background: radial-gradient(circle, #111 30%, #222 31%, #222 40%, #111 41%, #111 50%, #2a2a2a 51%, #1a1a1a 70%, #111 71%); border: 3px solid var(--amber); margin: 0 auto 20px; animation: spin 6s linear infinite; box-shadow: 0 0 20px rgba(200,135,10,0.3); }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .login-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
-    letter-spacing: 4px;
-    color: var(--amber-light);
-    margin-bottom: 4px;
-  }
-  .login-sub {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--tan);
-    letter-spacing: 3px;
-    margin-bottom: 32px;
-  }
+  .login-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 4px; color: var(--amber-light); margin-bottom: 4px; }
+  .login-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--tan); letter-spacing: 3px; margin-bottom: 32px; }
   .login-field { margin-bottom: 14px; text-align: left; }
-  .login-field label {
-    display: block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--amber);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 6px;
-  }
-  .login-field input {
-    width: 100%;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(200,135,10,0.4);
-    border-radius: 3px;
-    color: var(--cream);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 15px;
-    padding: 12px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .login-field label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--amber); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+  .login-field input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(200,135,10,0.4); border-radius: 3px; color: var(--cream); font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 12px 14px; outline: none; }
   .login-field input:focus { border-color: var(--amber-light); }
-  .login-error {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: #e08060;
-    margin-bottom: 12px;
-    display: none;
-    text-align: center;
-  }
-  .btn-login {
-    width: 100%;
-    margin-top: 8px;
-    padding: 16px;
-    background: var(--amber);
-    color: var(--dark);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 3px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    box-shadow: 3px 3px 0 var(--brown);
-    transition: transform 0.1s, box-shadow 0.1s;
-  }
-  .btn-login:active { transform: translate(1px,1px); box-shadow: 2px 2px 0 var(--brown); }
+  .login-error { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #e08060; margin-bottom: 12px; display: none; }
+  .btn-login { width: 100%; margin-top: 8px; padding: 16px; background: var(--amber); color: var(--dark); font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; border: none; border-radius: 3px; cursor: pointer; box-shadow: 3px 3px 0 var(--brown); touch-action: manipulation; }
 
   /* APP */
   .app { display: none; }
-
-  .header {
-    background: var(--groove);
-    border-bottom: 3px solid var(--amber);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-  }
-  .header-logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
-    letter-spacing: 3px;
-    color: var(--amber-light);
-    line-height: 1;
-  }
-  .header-logo span {
-    display: block;
-    font-size: 9px;
-    font-family: 'IBM Plex Mono', monospace;
-    color: var(--tan);
-    letter-spacing: 3px;
-    margin-top: 2px;
-  }
+  .header { background: var(--groove); border-bottom: 3px solid var(--amber); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+  .header-logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; color: var(--amber-light); line-height: 1; }
+  .header-logo span { display: block; font-size: 9px; font-family: 'IBM Plex Mono', monospace; color: var(--tan); letter-spacing: 3px; margin-top: 2px; }
   .header-right { display: flex; align-items: center; gap: 12px; }
-  .btn-logout {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--tan);
-    background: transparent;
-    border: 1px solid rgba(200,135,10,0.3);
-    padding: 6px 12px;
-    border-radius: 3px;
-    cursor: pointer;
-    letter-spacing: 1px;
-  }
-  .vinyl-sm {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #111 30%, #222 31%, #222 40%, #111 41%);
-    border: 2px solid var(--amber);
-    animation: spin 4s linear infinite paused;
-    box-shadow: 0 0 10px rgba(200,135,10,0.3);
-  }
+  .btn-logout { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--tan); background: transparent; border: 1px solid rgba(200,135,10,0.3); padding: 6px 12px; border-radius: 3px; cursor: pointer; touch-action: manipulation; }
+  .vinyl-sm { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle, #111 30%, #222 31%, #222 40%, #111 41%); border: 2px solid var(--amber); animation: spin 4s linear infinite paused; }
   .vinyl-sm.spinning { animation-play-state: running; }
 
   .main { padding: 20px 16px 100px; max-width: 480px; margin: 0 auto; }
-
   .view { display: none; }
   .view.active { display: block; }
-
   .catalog-hero { text-align: center; padding: 30px 0 16px; }
-  .catalog-hero h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 38px;
-    letter-spacing: 4px;
-    color: var(--amber-light);
-    line-height: 1;
-  }
-  .catalog-hero p {
-    color: var(--tan);
-    font-style: italic;
-    font-size: 13px;
-    margin-top: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-  }
-  .btn-add {
-    display: flex; align-items: center; justify-content: center; gap: 12px;
-    width: 100%; margin-top: 24px; padding: 20px;
-    background: var(--amber); color: var(--dark);
-    font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px;
-    border: none; border-radius: 4px; cursor: pointer;
-    box-shadow: 4px 4px 0 var(--brown);
-    transition: transform 0.1s, box-shadow 0.1s;
-  }
-  .btn-add:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--brown); }
+  .catalog-hero h2 { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 4px; color: var(--amber-light); line-height: 1; }
+  .catalog-hero p { color: var(--tan); font-style: italic; font-size: 13px; margin-top: 6px; font-family: 'IBM Plex Mono', monospace; }
+  .btn-add { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; margin-top: 24px; padding: 20px; background: var(--amber); color: var(--dark); font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; border: none; border-radius: 4px; cursor: pointer; box-shadow: 4px 4px 0 var(--brown); touch-action: manipulation; }
+  .btn-add:active { transform: translate(2px,2px); }
   .btn-add svg { width: 26px; height: 26px; }
-
-  .groove-line {
-    height: 3px;
-    background: repeating-linear-gradient(90deg, var(--amber) 0, var(--amber) 3px, transparent 3px, transparent 8px);
-    opacity: 0.3;
-    margin: 22px 0;
-    border-radius: 2px;
-  }
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 12px; letter-spacing: 4px; color: var(--amber);
-    text-transform: uppercase; margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
-  }
+  .groove-line { height: 3px; background: repeating-linear-gradient(90deg, var(--amber) 0, var(--amber) 3px, transparent 3px, transparent 8px); opacity: 0.3; margin: 22px 0; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 4px; color: var(--amber); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(200,135,10,0.3); }
-
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
-  .stat-card {
-    background: var(--groove); border: 1px solid rgba(200,135,10,0.3);
-    border-radius: 4px; padding: 14px 10px; text-align: center;
-  }
+  .stat-card { background: var(--groove); border: 1px solid rgba(200,135,10,0.3); border-radius: 4px; padding: 14px 10px; text-align: center; }
   .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--amber-light); line-height: 1; }
   .stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--tan); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .sync-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--tan); text-align: center; margin-top: 16px; opacity: 0.8; }
 
   /* MODAL */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(10,8,4,0.92); z-index: 200;
-    overflow-y: auto; -webkit-overflow-scrolling: touch;
-    padding: 20px 16px 40px;
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,8,4,0.92); z-index: 200; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 16px 40px; }
   .modal-overlay.open { display: block; }
-  .modal-box {
-    background: var(--groove); border: 2px solid var(--amber);
-    border-radius: 6px; padding: 24px 20px;
-    width: 100%; max-width: 480px; margin: 20px auto;
-    box-shadow: 0 0 40px rgba(200,135,10,0.2);
-    position: relative; z-index: 1;
-  }
-  .modal-title {
-    font-family: 'Bebas Neue', sans-serif; font-size: 26px;
-    letter-spacing: 3px; color: var(--amber-light);
-    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
-  }
-  .photo-area {
-    width: 100%; height: 190px;
-    border: 2px dashed var(--amber); border-radius: 4px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-    color: var(--tan); font-family: 'IBM Plex Mono', monospace; font-size: 12px;
-    cursor: pointer; position: relative; overflow: hidden;
-    background: rgba(0,0,0,0.3); margin-bottom: 18px;
-  }
+  .modal-box { background: var(--groove); border: 2px solid var(--amber); border-radius: 6px; padding: 24px 20px; width: 100%; max-width: 480px; margin: 20px auto; position: relative; z-index: 1; }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 3px; color: var(--amber-light); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .photo-area { width: 100%; height: 190px; border: 2px dashed var(--amber); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--tan); font-family: 'IBM Plex Mono', monospace; font-size: 12px; position: relative; overflow: hidden; background: rgba(0,0,0,0.3); margin-bottom: 18px; }
   .photo-area img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .photo-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
   .photo-area svg { width: 38px; height: 38px; opacity: 0.5; }
   .photo-label { opacity: 0.7; text-align: center; line-height: 1.5; }
   .field { margin-bottom: 14px; }
   .field label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--amber); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
-  .field input, .field select {
-    width: 100%; background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(200,135,10,0.4); border-radius: 3px;
-    color: var(--cream); font-family: 'Playfair Display', serif;
-    font-size: 16px; padding: 11px 13px; outline: none; transition: border-color 0.2s;
-  }
+  .field input, .field select { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(200,135,10,0.4); border-radius: 3px; color: var(--cream); font-family: 'Playfair Display', serif; font-size: 16px; padding: 11px 13px; outline: none; }
   .field input:focus, .field select:focus { border-color: var(--amber-light); }
   .field select option { background: var(--groove); }
   .btn-row { display: flex; gap: 10px; margin-top: 22px; }
-  .btn-save {
-    flex: 1; padding: 15px; background: var(--amber); color: var(--dark);
-    font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px;
-    border: none; border-radius: 3px; cursor: pointer;
-    box-shadow: 3px 3px 0 var(--brown); transition: transform 0.1s;
-    touch-action: manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.2);
-    position: relative; z-index: 10;
-  }
-  .btn-save:active { transform: translate(1px,1px); background: var(--amber-light); }
-  .btn-cancel {
-    touch-action: manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    position: relative; z-index: 10;
-  }
-  .btn-cancel {
-    padding: 15px 18px; background: transparent; color: var(--tan);
-    font-family: 'IBM Plex Mono', monospace; font-size: 13px;
-    border: 1px solid rgba(200,135,10,0.3); border-radius: 3px; cursor: pointer;
-  }
+  .btn-save { flex: 1; padding: 15px; background: var(--amber); color: var(--dark); font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; border: none; border-radius: 3px; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.2); position: relative; z-index: 10; }
+  .btn-save:active { background: var(--amber-light); }
+  .btn-save:disabled { opacity: 0.6; }
+  .btn-cancel { padding: 15px 18px; background: transparent; color: var(--tan); font-family: 'IBM Plex Mono', monospace; font-size: 13px; border: 1px solid rgba(200,135,10,0.3); border-radius: 3px; cursor: pointer; touch-action: manipulation; position: relative; z-index: 10; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(26,18,8,0.3); border-top-color: var(--dark); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
 
   /* COLLECTION */
   .filter-bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-  .filter-select {
-    background: var(--groove); border: 1px solid rgba(200,135,10,0.4);
-    color: var(--cream); font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px; padding: 8px 10px; border-radius: 3px;
-    flex: 1; min-width: 100px; cursor: pointer; outline: none;
-  }
+  .filter-select { background: var(--groove); border: 1px solid rgba(200,135,10,0.4); color: var(--cream); font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 8px 10px; border-radius: 3px; flex: 1; min-width: 100px; outline: none; }
   .filter-select option { background: var(--groove); }
-  .search-input {
-    width: 100%; background: var(--groove);
-    border: 1px solid rgba(200,135,10,0.4); color: var(--cream);
-    font-family: 'Playfair Display', serif; font-size: 15px;
-    padding: 10px 14px; border-radius: 3px; outline: none; margin-bottom: 10px;
-  }
+  .search-input { width: 100%; background: var(--groove); border: 1px solid rgba(200,135,10,0.4); color: var(--cream); font-family: 'Playfair Display', serif; font-size: 15px; padding: 10px 14px; border-radius: 3px; outline: none; margin-bottom: 10px; }
   .search-input::placeholder { color: rgba(212,180,131,0.4); font-style: italic; }
   .search-input:focus { border-color: var(--amber); }
-
   .lp-grid { display: flex; flex-direction: column; gap: 10px; }
-  .lp-card {
-    background: var(--groove); border: 1px solid rgba(200,135,10,0.25);
-    border-radius: 6px; display: flex; overflow: hidden;
-    transition: border-color 0.2s; cursor: pointer;
-  }
+  .lp-card { background: var(--groove); border: 1px solid rgba(200,135,10,0.25); border-radius: 6px; display: flex; overflow: hidden; cursor: pointer; }
   .lp-card:active { border-color: var(--amber); }
-  .lp-thumb { width: 96px; min-height: 96px; flex-shrink: 0; background: #111; position: relative; overflow: hidden; }
+  .lp-thumb { width: 96px; min-height: 96px; flex-shrink: 0; background: #111; overflow: hidden; }
   .lp-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .lp-thumb-placeholder {
-    width: 100%; height: 100%; min-height: 96px;
-    display: flex; align-items: center; justify-content: center;
-    background: radial-gradient(circle, #1a1a1a 30%, #222 31%, #222 40%, #1a1a1a 41%);
-  }
+  .lp-thumb-placeholder { width: 100%; height: 100%; min-height: 96px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 30%, #222 31%, #222 40%, #1a1a1a 41%); }
   .lp-info { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
   .lp-title { font-size: 16px; font-weight: 700; color: var(--cream); line-height: 1.2; }
   .lp-artist { font-size: 12px; color: var(--tan); font-style: italic; margin-top: 2px; }
@@ -331,7 +104,6 @@
   .badge-state-regular { background: rgba(180,120,10,0.2); color: #e0bc60; border: 1px solid rgba(180,120,10,0.4); }
   .badge-state-ruim { background: rgba(180,30,10,0.2); color: #e08060; border: 1px solid rgba(180,30,10,0.4); }
   .lp-price { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--amber-light); }
-
   .empty-state { text-align: center; padding: 50px 20px; color: var(--tan); }
   .empty-state svg { width: 70px; height: 70px; opacity: 0.3; margin-bottom: 14px; }
   .empty-state h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--amber); margin-bottom: 6px; }
@@ -341,46 +113,21 @@
   .detail-photo { width: 100%; height: 240px; background: #111; border-radius: 4px; overflow: hidden; margin-bottom: 18px; }
   .detail-photo img { width: 100%; height: 100%; object-fit: cover; }
   .detail-title { font-size: 24px; font-weight: 700; color: var(--cream); margin-bottom: 4px; }
-  .detail-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 11px 0; border-bottom: 1px solid rgba(200,135,10,0.15);
-    font-family: 'IBM Plex Mono', monospace; font-size: 13px;
-  }
+  .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid rgba(200,135,10,0.15); font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
   .detail-row .label { color: var(--tan); text-transform: uppercase; letter-spacing: 1px; font-size: 10px; }
-  .btn-delete {
-    width: 100%; margin-top: 18px; padding: 13px;
-    background: transparent; color: var(--red);
-    font-family: 'IBM Plex Mono', monospace; font-size: 13px;
-    border: 1px solid var(--red); border-radius: 3px; cursor: pointer; letter-spacing: 1px;
-  }
+  .btn-delete { width: 100%; margin-top: 18px; padding: 13px; background: transparent; color: var(--red); font-family: 'IBM Plex Mono', monospace; font-size: 13px; border: 1px solid var(--red); border-radius: 3px; cursor: pointer; touch-action: manipulation; }
 
-  /* BOTTOM NAV */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--groove); border-top: 2px solid var(--amber);
-    display: flex; z-index: 100;
-  }
-  .nav-btn {
-    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
-    padding: 11px 8px; background: none; border: none;
-    color: var(--tan); font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
-  }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--groove); border-top: 2px solid var(--amber); display: flex; z-index: 100; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 11px 8px; background: none; border: none; color: var(--tan); font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; touch-action: manipulation; }
   .nav-btn.active { color: var(--amber-light); }
   .nav-btn svg { width: 20px; height: 20px; }
-
-  .toast {
-    position: fixed; bottom: 80px; left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--amber); color: var(--dark);
-    font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500;
-    padding: 11px 22px; border-radius: 3px; opacity: 0; transition: all 0.3s;
-    z-index: 9999; white-space: nowrap;
-  }
+  .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--amber); color: var(--dark); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; padding: 11px 22px; border-radius: 3px; opacity: 0; transition: all 0.3s; z-index: 9999; white-space: nowrap; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
+
+<div class="loading-bar" id="loadingBar"></div>
 
 <!-- LOGIN -->
 <div class="login-wrap" id="loginWrap">
@@ -389,152 +136,87 @@
     <div class="login-title">VinylVault</div>
     <div class="login-sub">// Painel Admin</div>
     <div class="login-error" id="loginError">Usuário ou senha incorretos</div>
-    <div class="login-field">
-      <label>Usuário</label>
-      <input type="text" id="inputUser" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-    </div>
-    <div class="login-field">
-      <label>Senha</label>
-      <input type="password" id="inputPass" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button class="btn-login" onclick="doLogin()">Entrar</button>
+    <div class="login-field"><label>Usuário</label><input type="text" id="inputUser" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="login-field"><label>Senha</label><input type="password" id="inputPass"></div>
+    <button class="btn-login" id="btnLogin" type="button">Entrar</button>
   </div>
 </div>
 
 <!-- APP -->
 <div class="app" id="appWrap">
-
   <header class="header">
-    <div class="header-logo">
-      VinylVault
-      <span>// Admin</span>
-    </div>
+    <div class="header-logo">VinylVault<span>// Admin</span></div>
     <div class="header-right">
       <div class="vinyl-sm" id="vinylDisc"></div>
-      <button class="btn-logout" onclick="doLogout()">Sair</button>
+      <button class="btn-logout" id="btnLogout" type="button">Sair</button>
     </div>
   </header>
-
   <main class="main">
-
-    <!-- VIEW: HOME -->
     <div class="view active" id="view-home">
-      <div class="catalog-hero">
-        <h2>Catalogar<br>Disco</h2>
-        <p>// painel do colecionador</p>
-      </div>
-
-      <button class="btn-add" onclick="openAddModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="16"/>
-          <line x1="8" y1="12" x2="16" y2="12"/>
-        </svg>
+      <div class="catalog-hero"><h2>Catalogar<br>Disco</h2><p>// painel do colecionador</p></div>
+      <button class="btn-add" id="btnOpenAdd" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
         Catalogar Novo Disco
       </button>
-
       <div class="groove-line"></div>
       <div class="section-title">Estatísticas</div>
       <div class="stats">
-        <div class="stat-card">
-          <div class="stat-num" id="stat-total">0</div>
-          <div class="stat-label">Discos</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num" id="stat-genres">0</div>
-          <div class="stat-label">Gêneros</div>
-        </div>
-
+        <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Discos</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-genres">—</div><div class="stat-label">Gêneros</div></div>
       </div>
+      <div class="sync-status" id="syncStatus">Conectando...</div>
     </div>
-
-    <!-- VIEW: COLLECTION -->
     <div class="view" id="view-collection">
       <div class="section-title" style="margin-top:10px">Gerenciar Coleção</div>
       <input type="text" class="search-input" placeholder="Buscar por nome ou artista..." id="searchInput" oninput="renderCollection()">
       <div class="filter-bar">
         <select class="filter-select" id="filterGenre" onchange="renderCollection()">
           <option value="">Todos os Gêneros</option>
-          <option>Rock</option><option>MPB</option><option>Samba</option>
-          <option>Jazz</option><option>Blues</option><option>Soul/Funk</option>
-          <option>Pop</option><option>Clássico</option><option>Eletrônico</option>
-          <option>Reggae</option><option>Outro</option>
+          <option>Rock</option><option>MPB</option><option>Samba</option><option>Jazz</option><option>Blues</option><option>Soul/Funk</option><option>Pop</option><option>Clássico</option><option>Eletrônico</option><option>Reggae</option><option>Outro</option>
         </select>
         <select class="filter-select" id="filterState" onchange="renderCollection()">
           <option value="">Todos os Estados</option>
           <option>Ótimo</option><option>Bom</option><option>Regular</option><option>Ruim</option>
         </select>
         <select class="filter-select" id="filterSort" onchange="renderCollection()">
-          <option value="date">Mais recente</option>
-          <option value="name">A–Z</option>
-          <option value="price-asc">Menor valor</option>
-          <option value="price-desc">Maior valor</option>
+          <option value="date">Mais recente</option><option value="name">A–Z</option>
+          <option value="price-asc">Menor valor</option><option value="price-desc">Maior valor</option>
         </select>
       </div>
       <div class="lp-grid" id="lpGrid"></div>
       <div id="emptyState" class="empty-state" style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-        <h3>Nenhum Disco</h3>
-        <p>Adicione seu primeiro vinil!</p>
+        <h3>Nenhum Disco</h3><p>Adicione seu primeiro vinil!</p>
       </div>
     </div>
-
   </main>
-
   <nav class="bottom-nav">
-    <button class="nav-btn active" id="nav-home" onclick="switchView('home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-      Início
+    <button class="nav-btn active" id="nav-home" onclick="switchView('home')" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Início
     </button>
-    <button class="nav-btn" id="nav-collection" onclick="switchView('collection')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
-        <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
-        <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
-      </svg>
-      Coleção
+    <button class="nav-btn" id="nav-collection" onclick="switchView('collection')" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>Coleção
     </button>
   </nav>
-
 </div>
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="addModal">
   <div class="modal-box">
-    <div class="modal-title">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-      Novo Disco
-    </div>
+    <div class="modal-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Novo Disco</div>
     <div class="photo-area" id="photoArea">
-      <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="handlePhoto(event)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-        <circle cx="12" cy="13" r="4"/>
-      </svg>
+      <input type="file" accept="image/*" capture="environment" id="photoInput">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
       <div class="photo-label">Toque para tirar foto<br>ou escolher da galeria</div>
       <img id="photoPreview" style="display:none">
     </div>
     <div class="field"><label>Nome do LP / Álbum</label><input type="text" id="lpName" placeholder="ex: Kind of Blue" autocomplete="off"></div>
     <div class="field"><label>Artista / Banda</label><input type="text" id="lpArtist" placeholder="ex: Miles Davis" autocomplete="off"></div>
-    <div class="field">
-      <label>Gênero</label>
-      <select id="lpGenre">
-        <option value="">Selecione...</option>
-        <option>Rock</option><option>MPB</option><option>Samba</option>
-        <option>Jazz</option><option>Blues</option><option>Soul/Funk</option>
-        <option>Pop</option><option>Clássico</option><option>Eletrônico</option>
-        <option>Reggae</option><option>Outro</option>
-      </select>
+    <div class="field"><label>Gênero</label>
+      <select id="lpGenre"><option value="">Selecione...</option><option>Rock</option><option>MPB</option><option>Samba</option><option>Jazz</option><option>Blues</option><option>Soul/Funk</option><option>Pop</option><option>Clássico</option><option>Eletrônico</option><option>Reggae</option><option>Outro</option></select>
     </div>
-    <div class="field">
-      <label>Estado de Conservação</label>
-      <select id="lpState">
-        <option value="">Selecione...</option>
-        <option>Ótimo</option><option>Bom</option><option>Regular</option><option>Ruim</option>
-      </select>
+    <div class="field"><label>Estado de Conservação</label>
+      <select id="lpState"><option value="">Selecione...</option><option>Ótimo</option><option>Bom</option><option>Regular</option><option>Ruim</option></select>
     </div>
     <div class="field"><label>Valor (R$)</label><input type="number" id="lpValue" placeholder="0.00" step="0.01" min="0"></div>
     <div class="btn-row">
@@ -547,47 +229,62 @@
 <!-- DETAIL MODAL -->
 <div class="modal-overlay" id="detailModal">
   <div class="modal-box">
-    <div class="modal-title">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-      Detalhes
-    </div>
+    <div class="modal-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Detalhes</div>
     <div class="detail-photo" id="detailPhoto"></div>
     <div class="detail-title" id="detailName"></div>
     <div id="detailArtist" style="color:var(--tan);font-style:italic;margin-bottom:14px;font-size:14px"></div>
     <div class="detail-row"><span class="label">Gênero</span><span id="detailGenre"></span></div>
     <div class="detail-row"><span class="label">Estado</span><span id="detailState"></span></div>
-    <div class="detail-row"><span class="label">Valor</span><span id="detailValue" style="font-family:'Bebas Neue';font-size:20px;color:var(--amber-light)"></span></div>
-    <div class="detail-row" style="border:none"><span class="label">Adicionado em</span><span id="detailDate" style="font-size:11px;color:var(--tan)"></span></div>
-    <button class="btn-delete" id="detailDeleteBtn">Remover da Coleção</button>
+    <div class="detail-row" style="border:none"><span class="label">Valor</span><span id="detailValue" style="font-family:'Bebas Neue';font-size:20px;color:var(--amber-light)"></span></div>
+    <button class="btn-delete" id="detailDeleteBtn" type="button">Remover da Coleção</button>
     <div class="btn-row" style="margin-top:10px">
-      <button class="btn-cancel" style="flex:1;text-align:center" onclick="closeDetailModal()">Fechar</button>
+      <button class="btn-cancel" style="flex:1;text-align:center" id="btnCloseDetail" type="button">Fechar</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getDatabase, ref, push, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDoL98bz6nUWdFMALbLC8EtLegM98M0MTk",
+    authDomain: "vinylvault-332f2.firebaseapp.com",
+    databaseURL: "https://vinylvault-332f2-default-rtdb.firebaseio.com",
+    projectId: "vinylvault-332f2",
+    storageBucket: "vinylvault-332f2.firebasestorage.app",
+    messagingSenderId: "780759522818",
+    appId: "1:780759522818:web:17190d6bfceea060d2111b"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getDatabase(fbApp);
+  const discsRef = ref(db, 'discos');
+
   const ADMIN_USER = 'rps';
   const ADMIN_PASS = 'Paranga@mirro590';
-  const SESSION_KEY = 'vv_admin_session';
+  const SESSION_KEY = 'vv_admin_ok';
 
-  let collection = JSON.parse(localStorage.getItem('vinyl_collection') || '[]');
+  let collection = [];
   let currentPhoto = null;
-  let detailId = null;
+  let currentDetailKey = null;
 
   // AUTH
   function checkSession() {
-    if (sessionStorage.getItem(SESSION_KEY) === 'ok') {
-      showApp();
-    }
+    if (sessionStorage.getItem(SESSION_KEY) === '1') showApp();
   }
 
+  document.getElementById('btnLogin').addEventListener('click', doLogin);
+  document.getElementById('btnLogin').addEventListener('touchend', function(e){ e.preventDefault(); doLogin(); });
+  document.getElementById('inputPass').addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
+
   function doLogin() {
-    const u = document.getElementById('inputUser').value.trim();
-    const p = document.getElementById('inputPass').value;
+    var u = document.getElementById('inputUser').value.trim();
+    var p = document.getElementById('inputPass').value;
     if (u === ADMIN_USER && p === ADMIN_PASS) {
-      sessionStorage.setItem(SESSION_KEY, 'ok');
+      sessionStorage.setItem(SESSION_KEY, '1');
       document.getElementById('loginError').style.display = 'none';
       showApp();
     } else {
@@ -596,6 +293,7 @@
     }
   }
 
+  document.getElementById('btnLogout').addEventListener('click', doLogout);
   function doLogout() {
     sessionStorage.removeItem(SESSION_KEY);
     document.getElementById('appWrap').style.display = 'none';
@@ -607,47 +305,71 @@
   function showApp() {
     document.getElementById('loginWrap').style.display = 'none';
     document.getElementById('appWrap').style.display = 'block';
-    updateStats();
+    startFirebase();
   }
 
-  function save() {
-    localStorage.setItem('vinyl_collection', JSON.stringify(collection));
+  // FIREBASE
+  function startFirebase() {
+    setLoading(true);
+    document.getElementById('syncStatus').textContent = 'Conectando...';
+    onValue(discsRef, function(snapshot) {
+      collection = [];
+      snapshot.forEach(function(child) {
+        collection.unshift(Object.assign({ _key: child.key }, child.val()));
+      });
+      setLoading(false);
+      document.getElementById('syncStatus').textContent = '● Sincronizado — ' + collection.length + ' disco(s)';
+      updateStats();
+      if (document.getElementById('view-collection').classList.contains('active')) renderCollection();
+    }, function() {
+      setLoading(false);
+      document.getElementById('syncStatus').textContent = '⚠ Sem conexão com a nuvem';
+    });
   }
 
-  function switchView(name) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('view-' + name).classList.add('active');
-    document.getElementById('nav-' + name).classList.add('active');
-    if (name === 'collection') renderCollection();
-    if (name === 'home') updateStats();
+  function setLoading(on) {
+    var bar = document.getElementById('loadingBar');
+    bar.style.width = on ? '70%' : '100%';
+    if (!on) setTimeout(function(){ bar.style.width = '0'; }, 400);
   }
 
   function updateStats() {
     document.getElementById('stat-total').textContent = collection.length;
-    const genres = new Set(collection.map(l => l.genre).filter(Boolean));
+    var genres = new Set(collection.map(function(l){ return l.genre; }).filter(Boolean));
     document.getElementById('stat-genres').textContent = genres.size;
-
   }
 
-  function handlePhoto(e) {
-    const file = e.target.files[0];
+  // PHOTO
+  document.getElementById('photoInput').addEventListener('change', function(e) {
+    var file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
+    var reader = new FileReader();
     reader.onload = function(ev) {
-      // Compress image before storing to avoid localStorage size limits
-      const img = new Image();
+      var img = new Image();
       img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const MAX = 600;
-        let w = img.width, h = img.height;
-        if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } }
-        else { if (h > MAX) { w = w * MAX / h; h = MAX; } }
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        currentPhoto = canvas.toDataURL('image/jpeg', 0.7);
-        const preview = document.getElementById('photoPreview');
+        // Try progressively smaller until fits under ~700KB base64
+        var attempts = [
+          {max: 500, q: 0.6},
+          {max: 400, q: 0.5},
+          {max: 300, q: 0.4},
+          {max: 250, q: 0.35},
+          {max: 200, q: 0.3},
+          {max: 150, q: 0.25}
+        ];
+        var result = null;
+        for (var i = 0; i < attempts.length; i++) {
+          var MAX = attempts[i].max;
+          var w = img.width, h = img.height;
+          if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+          else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          result = canvas.toDataURL('image/jpeg', attempts[i].q);
+          if (result.length < 900000) break; // under ~675KB binary
+        }
+        currentPhoto = result;
+        var preview = document.getElementById('photoPreview');
         preview.src = currentPhoto;
         preview.style.display = 'block';
         document.querySelector('.photo-area svg').style.display = 'none';
@@ -657,19 +379,30 @@
     };
     reader.readAsDataURL(file);
     spinVinyl();
-  }
+  });
+
+  // ADD MODAL
+  document.getElementById('btnOpenAdd').addEventListener('click', openAddModal);
+  document.getElementById('btnOpenAdd').addEventListener('touchend', function(e){ e.preventDefault(); openAddModal(); });
 
   function openAddModal() {
     currentPhoto = null;
     document.getElementById('photoPreview').style.display = 'none';
     document.querySelector('.photo-area svg').style.display = '';
     document.querySelector('.photo-label').style.display = '';
-    ['lpName','lpArtist','lpValue'].forEach(id => document.getElementById(id).value = '');
-    ['lpGenre','lpState'].forEach(id => document.getElementById(id).selectedIndex = 0);
+    ['lpName','lpArtist','lpValue'].forEach(function(id){ document.getElementById(id).value = ''; });
+    ['lpGenre','lpState'].forEach(function(id){ document.getElementById(id).selectedIndex = 0; });
     document.getElementById('addModal').classList.add('open');
     spinVinyl();
   }
+
+  document.getElementById('btnCancelLP').addEventListener('click', function(e){ e.stopPropagation(); closeAddModal(); });
+  document.getElementById('btnCancelLP').addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); closeAddModal(); });
   function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+
+  // SAVE
+  document.getElementById('btnSaveLP').addEventListener('click', function(e){ e.stopPropagation(); saveLP(); });
+  document.getElementById('btnSaveLP').addEventListener('touchend', function(e){ e.preventDefault(); e.stopPropagation(); saveLP(); });
 
   function saveLP() {
     var name = (document.getElementById('lpName').value || '').trim();
@@ -682,45 +415,55 @@
     if (!genre) { alert('Selecione o genero'); return; }
     if (!state) { alert('Selecione o estado'); return; }
 
+    var btn = document.getElementById('btnSaveLP');
+    btn.innerHTML = '<span class="spinner"></span>Salvando...';
+    btn.disabled = true;
+
     var lp = {
-      id: Date.now(),
-      name: name,
-      artist: artist,
-      genre: genre,
-      state: state,
+      name: name, artist: artist, genre: genre, state: state,
       value: parseFloat(value) || 0,
-      photo: currentPhoto,
-      date: new Date().toLocaleDateString('pt-BR')
+      photo: currentPhoto || null,
+      date: new Date().toLocaleDateString('pt-BR'),
+      timestamp: Date.now()
     };
 
-    collection.unshift(lp);
-
-    var saved = false;
-    try {
-      localStorage.setItem('vinyl_collection', JSON.stringify(collection));
-      saved = true;
-    } catch(e) {
-      try {
-        var fallback = collection.map(function(l) {
-          return l.id === lp.id ? Object.assign({}, l, {photo: null}) : l;
-        });
-        localStorage.setItem('vinyl_collection', JSON.stringify(fallback));
-        collection = fallback;
-        saved = true;
-      } catch(e2) {
-        collection.shift();
-        alert('Erro ao salvar: armazenamento cheio');
-        return;
-      }
-    }
-
-    if (saved) {
+    push(discsRef, lp).then(function() {
       closeAddModal();
-      updateStats();
       showToast('Disco catalogado!');
       spinVinyl();
-    }
+      btn.innerHTML = 'Salvar Disco';
+      btn.disabled = false;
+    }).catch(function(err) {
+      // Photo still too large? Strip it and warn
+      if (lp.photo && err && err.message) {
+        var lpNoPhoto = Object.assign({}, lp, { photo: null });
+        push(discsRef, lpNoPhoto).then(function() {
+          closeAddModal();
+          showToast('Salvo sem foto — imagem ainda muito grande');
+          btn.innerHTML = 'Salvar Disco';
+          btn.disabled = false;
+        }).catch(function() {
+          alert('Erro ao salvar. Verifique sua conexao.');
+          btn.innerHTML = 'Salvar Disco';
+          btn.disabled = false;
+        });
+      } else {
+        alert('Erro ao salvar: ' + (err ? err.message : 'desconhecido'));
+        btn.innerHTML = 'Salvar Disco';
+        btn.disabled = false;
+      }
+    });
   }
+
+  // COLLECTION
+  window.switchView = function(name) {
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('view-' + name).classList.add('active');
+    document.getElementById('nav-' + name).classList.add('active');
+    if (name === 'collection') renderCollection();
+    if (name === 'home') updateStats();
+  };
 
   function stateClass(s) {
     if (s === 'Ótimo') return 'badge-state-otimo';
@@ -730,96 +473,89 @@
   }
 
   function renderCollection() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const genre = document.getElementById('filterGenre').value;
-    const state = document.getElementById('filterState').value;
-    const sort = document.getElementById('filterSort').value;
-    let list = collection.filter(lp => {
-      const matchName = lp.name.toLowerCase().includes(search) || (lp.artist||'').toLowerCase().includes(search);
+    var search = document.getElementById('searchInput').value.toLowerCase();
+    var genre = document.getElementById('filterGenre').value;
+    var state = document.getElementById('filterState').value;
+    var sort = document.getElementById('filterSort').value;
+
+    var list = collection.filter(function(lp) {
+      var matchName = lp.name.toLowerCase().includes(search) || (lp.artist||'').toLowerCase().includes(search);
       return matchName && (!genre || lp.genre === genre) && (!state || lp.state === state);
     });
-    if (sort === 'name') list.sort((a,b) => a.name.localeCompare(b.name));
-    else if (sort === 'price-asc') list.sort((a,b) => a.value - b.value);
-    else if (sort === 'price-desc') list.sort((a,b) => b.value - a.value);
-    const grid = document.getElementById('lpGrid');
-    const empty = document.getElementById('emptyState');
+
+    if (sort === 'name') list.sort(function(a,b){ return a.name.localeCompare(b.name); });
+    else if (sort === 'price-asc') list.sort(function(a,b){ return a.value - b.value; });
+    else if (sort === 'price-desc') list.sort(function(a,b){ return b.value - a.value; });
+
+    var grid = document.getElementById('lpGrid');
+    var empty = document.getElementById('emptyState');
     if (!list.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
-    grid.innerHTML = list.map(lp => `
-      <div class="lp-card" onclick="openDetail(${lp.id})">
-        <div class="lp-thumb">
-          ${lp.photo ? `<img src="${lp.photo}" alt="${lp.name}">` : `<div class="lp-thumb-placeholder"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(200,135,10,0.25)" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>`}
-        </div>
-        <div class="lp-info">
-          <div>
-            <div class="lp-title">${lp.name}</div>
-            ${lp.artist ? `<div class="lp-artist">${lp.artist}</div>` : ''}
-          </div>
-          <div class="lp-meta">
-            <span class="badge badge-genre">${lp.genre}</span>
-            <span class="badge ${stateClass(lp.state)}">${lp.state}</span>
-            ${lp.value ? `<span class="lp-price">R$ ${lp.value.toFixed(2)}</span>` : ''}
-          </div>
-        </div>
-      </div>
-    `).join('');
+
+    grid.innerHTML = list.map(function(lp) {
+      return '<div class="lp-card" data-key="' + lp._key + '">' +
+        '<div class="lp-thumb">' +
+        (lp.photo ? '<img src="' + lp.photo + '" alt="' + lp.name + '">' :
+          '<div class="lp-thumb-placeholder"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(200,135,10,0.25)" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>') +
+        '</div><div class="lp-info"><div>' +
+        '<div class="lp-title">' + lp.name + '</div>' +
+        (lp.artist ? '<div class="lp-artist">' + lp.artist + '</div>' : '') +
+        '</div><div class="lp-meta">' +
+        '<span class="badge badge-genre">' + lp.genre + '</span>' +
+        '<span class="badge ' + stateClass(lp.state) + '">' + lp.state + '</span>' +
+        (lp.value ? '<span class="lp-price">R$ ' + lp.value.toFixed(2) + '</span>' : '') +
+        '</div></div></div>';
+    }).join('');
+
+    grid.querySelectorAll('.lp-card').forEach(function(card) {
+      card.addEventListener('click', function(){ openDetail(card.dataset.key); });
+    });
   }
 
-  function openDetail(id) {
-    const lp = collection.find(l => l.id === id);
+  // DETAIL
+  function openDetail(key) {
+    var lp = collection.find(function(l){ return l._key === key; });
     if (!lp) return;
-    detailId = id;
+    currentDetailKey = key;
     document.getElementById('detailPhoto').innerHTML = lp.photo
-      ? `<img src="${lp.photo}" alt="${lp.name}">`
-      : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#1a1a1a 30%,#222 31%,#222 40%,#1a1a1a 41%)"><svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="rgba(200,135,10,0.2)" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>`;
+      ? '<img src="' + lp.photo + '" alt="' + lp.name + '">'
+      : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#1a1a1a 30%,#222 31%,#222 40%,#1a1a1a 41%)"><svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="rgba(200,135,10,0.2)" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>';
     document.getElementById('detailName').textContent = lp.name;
     document.getElementById('detailArtist').textContent = lp.artist || '';
     document.getElementById('detailGenre').textContent = lp.genre;
     document.getElementById('detailState').textContent = lp.state;
-    document.getElementById('detailValue').textContent = lp.value ? `R$ ${lp.value.toFixed(2)}` : '—';
-    document.getElementById('detailDate').textContent = lp.date;
-    document.getElementById('detailDeleteBtn').onclick = () => deleteLP(id);
+    document.getElementById('detailValue').textContent = lp.value ? 'R$ ' + lp.value.toFixed(2) : '—';
     document.getElementById('detailModal').classList.add('open');
   }
-  function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); }
 
-  function deleteLP(id) {
-    if (!confirm('Remover este disco da coleção?')) return;
-    collection = collection.filter(l => l.id !== id);
-    save();
-    closeDetailModal();
-    renderCollection();
-    updateStats();
-    showToast('Disco removido');
-  }
+  document.getElementById('btnCloseDetail').addEventListener('click', function(){ document.getElementById('detailModal').classList.remove('open'); });
+  document.getElementById('btnCloseDetail').addEventListener('touchend', function(e){ e.preventDefault(); document.getElementById('detailModal').classList.remove('open'); });
 
+  document.getElementById('detailDeleteBtn').addEventListener('click', function() {
+    if (!currentDetailKey) return;
+    if (!confirm('Remover este disco da colecao?')) return;
+    remove(ref(db, 'discos/' + currentDetailKey)).then(function() {
+      document.getElementById('detailModal').classList.remove('open');
+      showToast('Disco removido');
+    }).catch(function() {
+      alert('Erro ao remover. Verifique sua conexao.');
+    });
+  });
+
+  // UTILS
   function showToast(msg) {
-    const t = document.getElementById('toast');
+    var t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
+    setTimeout(function(){ t.classList.remove('show'); }, 2800);
   }
 
   function spinVinyl() {
-    const v = document.getElementById('vinylDisc');
+    var v = document.getElementById('vinylDisc');
     if (!v) return;
     v.classList.add('spinning');
-    setTimeout(() => v.classList.remove('spinning'), 3000);
+    setTimeout(function(){ v.classList.remove('spinning'); }, 3000);
   }
-
-  // Wire buttons with addEventListener for reliable mobile touch
-  document.addEventListener('DOMContentLoaded', function() {
-    var saveBtn = document.getElementById('btnSaveLP');
-    var cancelBtn = document.getElementById('btnCancelLP');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', function(e) { e.stopPropagation(); saveLP(); });
-      saveBtn.addEventListener('touchend', function(e) { e.preventDefault(); e.stopPropagation(); saveLP(); });
-    }
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', function(e) { e.stopPropagation(); closeAddModal(); });
-      cancelBtn.addEventListener('touchend', function(e) { e.preventDefault(); e.stopPropagation(); closeAddModal(); });
-    }
-  });
 
   checkSession();
 </script>
