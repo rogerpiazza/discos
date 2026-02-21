@@ -56,6 +56,22 @@
   .stat-card { background: var(--groove); border: 1px solid rgba(200,135,10,0.3); border-radius: 4px; padding: 14px 10px; text-align: center; }
   .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--amber-light); line-height: 1; }
   .stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--tan); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .top-discs-grid { display: flex; flex-direction: column; gap: 8px; }
+  .top-disc-row { display: flex; align-items: center; gap: 10px; background: var(--groove); border: 1px solid rgba(200,135,10,0.2); border-radius: 5px; padding: 10px 12px; }
+  .top-disc-rank { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--amber); width: 24px; flex-shrink: 0; }
+  .top-disc-info { flex: 1; min-width: 0; }
+  .top-disc-name { font-size: 14px; font-weight: 700; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .top-disc-count { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--tan); margin-top: 2px; }
+  .top-disc-bar-wrap { width: 50px; flex-shrink: 0; }
+  .top-disc-bar-bg { background: rgba(200,135,10,0.15); border-radius: 2px; height: 6px; width: 100%; }
+  .top-disc-bar { background: var(--amber); border-radius: 2px; height: 6px; transition: width 0.5s; }
+  .access-chart { display: flex; flex-direction: column; gap: 6px; }
+  .access-row { display: flex; align-items: center; gap: 8px; }
+  .access-day { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--tan); width: 60px; flex-shrink: 0; }
+  .access-bar-wrap { flex: 1; background: rgba(200,135,10,0.1); border-radius: 2px; height: 18px; position: relative; overflow: hidden; }
+  .access-bar { background: linear-gradient(90deg, var(--amber) 0%, var(--amber-light) 100%); height: 100%; border-radius: 2px; transition: width 0.6s; min-width: 2px; }
+  .access-num { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--amber-light); width: 28px; text-align: right; flex-shrink: 0; }
   .sync-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--tan); text-align: center; margin-top: 16px; opacity: 0.8; }
 
   /* MODAL */
@@ -156,7 +172,7 @@
 <!-- APP -->
 <div class="app" id="appWrap">
   <header class="header">
-    <div class="header-logo">Discos do Roger</div>
+    <div class="header-logo" onclick="switchView('home')" style="cursor:pointer">Discos do Roger</div>
     <div class="header-right">
       <div class="vinyl-sm" id="vinylDisc"></div>
       <button class="btn-logout" id="btnLogout" type="button">Sair</button>
@@ -200,6 +216,26 @@
         <h3>Nenhum Disco</h3><p>Adicione seu primeiro vinil!</p>
       </div>
     </div>
+    <!-- STATS VIEW -->
+    <div class="view" id="view-stats">
+      <div class="section-title" style="margin-top:10px">Estatísticas do Site</div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="s-visits">—</div><div class="stat-label">Visitas Únicas</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-views">—</div><div class="stat-label">Visualiz. Discos</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-today">—</div><div class="stat-label">Hoje</div></div>
+        <div class="stat-card"><div class="stat-num" id="s-week">—</div><div class="stat-label">Esta Semana</div></div>
+      </div>
+
+      <div class="groove-line"></div>
+      <div class="section-title">Discos Mais Vistos</div>
+      <div id="topDiscsGrid" class="top-discs-grid"></div>
+
+      <div class="groove-line"></div>
+      <div class="section-title">Acessos por Dia</div>
+      <div id="accessChart" class="access-chart"></div>
+    </div>
+
   </main>
   <nav class="bottom-nav">
     <button class="nav-btn active" id="nav-home" onclick="switchView('home')" type="button">
@@ -207,6 +243,9 @@
     </button>
     <button class="nav-btn" id="nav-collection" onclick="switchView('collection')" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>Coleção
+    </button>
+    <button class="nav-btn" id="nav-stats" onclick="switchView('stats')" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats
     </button>
   </nav>
 </div>
@@ -525,7 +564,91 @@
     document.getElementById('nav-' + name).classList.add('active');
     if (name === 'collection') renderCollection();
     if (name === 'home') updateStats();
+    if (name === 'stats') loadStats();
   };
+
+  // ── STATS ──────────────────────────────────────────
+  function loadStats() {
+    document.getElementById('s-visits').textContent = '...';
+    document.getElementById('s-views').textContent = '...';
+    document.getElementById('s-today').textContent = '...';
+    document.getElementById('s-week').textContent = '...';
+    document.getElementById('topDiscsGrid').innerHTML = '<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--tan);padding:10px 0">Carregando...</div>';
+    document.getElementById('accessChart').innerHTML = '';
+    var statsRef = ref(db, 'stats');
+    get(statsRef).then(function(snapshot) {
+      var data = snapshot.val() || {};
+      var visits = data.visits || {};
+      var discViews = data.discViews || {};
+      var dailyAccess = data.dailyAccess || {};
+
+      // Total visits
+      var totalVisits = Object.keys(visits).length;
+      document.getElementById('s-visits').textContent = totalVisits;
+
+      // Total disc views
+      var totalViews = Object.values(discViews).reduce(function(a,b){ return a + (b.count||0); }, 0);
+      document.getElementById('s-views').textContent = totalViews;
+
+      // Today and this week
+      var today = new Date().toISOString().slice(0,10);
+      var todayCount = dailyAccess[today] || 0;
+      document.getElementById('s-today').textContent = todayCount;
+
+      var weekCount = 0;
+      for (var i = 0; i < 7; i++) {
+        var d = new Date(); d.setDate(d.getDate() - i);
+        var key = d.toISOString().slice(0,10);
+        weekCount += dailyAccess[key] || 0;
+      }
+      document.getElementById('s-week').textContent = weekCount;
+
+      // Top discs
+      var discArr = Object.values(discViews).sort(function(a,b){ return (b.count||0) - (a.count||0); }).slice(0, 8);
+      var maxCount = discArr.length ? (discArr[0].count || 1) : 1;
+      var topGrid = document.getElementById('topDiscsGrid');
+      if (!discArr.length) {
+        topGrid.innerHTML = '<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--tan);padding:10px 0">Nenhuma visualização ainda</div>';
+      } else {
+        topGrid.innerHTML = discArr.map(function(d, i) {
+          var pct = Math.round((d.count / maxCount) * 100);
+          return '<div class="top-disc-row">' +
+            '<div class="top-disc-rank">' + (i+1) + '</div>' +
+            '<div class="top-disc-info">' +
+              '<div class="top-disc-name">' + (d.name || 'Disco') + '</div>' +
+              '<div class="top-disc-count">' + d.count + ' visualização' + (d.count !== 1 ? 'ões' : '') + '</div>' +
+            '</div>' +
+            '<div class="top-disc-bar-wrap"><div class="top-disc-bar-bg"><div class="top-disc-bar" style="width:' + pct + '%"></div></div></div>' +
+          '</div>';
+        }).join('');
+      }
+
+      // Daily access chart — last 14 days
+      var days = [];
+      for (var j = 13; j >= 0; j--) {
+        var dd = new Date(); dd.setDate(dd.getDate() - j);
+        var dk = dd.toISOString().slice(0,10);
+        var label = dd.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        days.push({ label: label, count: dailyAccess[dk] || 0 });
+      }
+      var maxDay = Math.max.apply(null, days.map(function(d){ return d.count; })) || 1;
+      var chart = document.getElementById('accessChart');
+      chart.innerHTML = days.map(function(d) {
+        var pct = Math.round((d.count / maxDay) * 100);
+        return '<div class="access-row">' +
+          '<div class="access-day">' + d.label + '</div>' +
+          '<div class="access-bar-wrap"><div class="access-bar" style="width:' + pct + '%"></div></div>' +
+          '<div class="access-num">' + (d.count || '') + '</div>' +
+        '</div>';
+      }).join('');
+    }).catch(function(err) {
+      document.getElementById('s-visits').textContent = '—';
+      document.getElementById('s-views').textContent = '—';
+      document.getElementById('s-today').textContent = '—';
+      document.getElementById('s-week').textContent = '—';
+      document.getElementById('topDiscsGrid').innerHTML = '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;color:#e08060;padding:10px 0">Erro: ' + (err ? err.message : 'sem permissao') + '</div>';
+    });
+  }
 
   function stateClass(s) {
     if (s === 'Ótimo') return 'badge-state-otimo';

@@ -85,7 +85,7 @@
 <div class="loading-bar" id="loadingBar"></div>
 
 <header class="header">
-  <div class="header-logo">Discos do Roger</div>
+  <div class="header-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer">Discos do Roger</div>
   <div class="vinyl-sm"></div>
 </header>
 
@@ -143,7 +143,7 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+  import { getDatabase, ref, onValue, get, set, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyDoL98bz6nUWdFMALbLC8EtLegM98M0MTk",
@@ -158,6 +158,37 @@
   const fbApp = initializeApp(firebaseConfig);
   const db = getDatabase(fbApp);
   const discsRef = ref(db, 'discos');
+
+  // ── TRACKING ──────────────────────────────────────
+  function trackVisit() {
+    // Unique visit per browser session
+    if (sessionStorage.getItem('vv_visited')) return;
+    sessionStorage.setItem('vv_visited', '1');
+
+    // Daily counter
+    var today = new Date().toISOString().slice(0,10);
+    var dailyRef = ref(db, 'stats/dailyAccess/' + today);
+    get(dailyRef).then(function(snap) {
+      set(dailyRef, (snap.val() || 0) + 1);
+    });
+
+    // Unique visitor by random session id
+    var vid = Math.random().toString(36).slice(2);
+    var now = new Date().toISOString();
+    set(ref(db, 'stats/visits/' + vid), { time: now });
+  }
+
+  function trackDiscView(key, name) {
+    var viewRef = ref(db, 'stats/discViews/' + key);
+    get(viewRef).then(function(snap) {
+      var cur = snap.val() || { count: 0, name: name };
+      cur.count = (cur.count || 0) + 1;
+      cur.name = name;
+      set(viewRef, cur);
+    });
+  }
+
+  trackVisit();
 
   let collection = [];
 
@@ -246,6 +277,7 @@
   function openDetail(key) {
     var lp = collection.find(function(l){ return l._key === key; });
     if (!lp) return;
+    trackDiscView(key, lp.name);
     document.getElementById('detailPhoto').innerHTML = lp.photo
       ? '<img src="' + lp.photo + '" alt="' + lp.name + '">'
       : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#1a1a1a 30%,#222 31%,#222 40%,#1a1a1a 41%)"><svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="rgba(200,135,10,0.2)" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>';
