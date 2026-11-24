@@ -25,6 +25,7 @@
   .groove-line { height: 3px; background: repeating-linear-gradient(90deg, var(--amber) 0, var(--amber) 3px, transparent 3px, transparent 8px); opacity: 0.3; margin: 18px 0; }
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
   .stat-card { background: var(--groove); border: 1px solid rgba(200,135,10,0.25); border-radius: 4px; padding: 12px 8px; text-align: center; }
+  .btn-export { width: 100%; margin: 12px 0 4px; padding: 12px; background: transparent; color: var(--amber-light); font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 1px; border: 1px solid var(--amber); border-radius: 3px; cursor: pointer; touch-action: manipulation; }
   .stat-card-wide { grid-column: 1 / -1; }
   .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--amber-light); line-height: 1; }
   .stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--tan); text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
@@ -115,6 +116,7 @@
       <option value="price-asc">Menor valor</option><option value="price-desc">Maior valor</option>
     </select>
   </div>
+  <button type="button" class="btn-export" onclick="exportPDF()">⬇ Exportar PDF (sem valores)</button>
   <div class="result-count" id="resultCount"></div>
   <div id="connectingMsg" class="connecting">Carregando coleção...</div>
   <div class="lp-grid" id="lpGrid"></div>
@@ -326,6 +328,42 @@
     observer.observe(sentinel);
   }
   initObserver();
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  // Exporta a lista atual (respeitando busca/filtros/ordem) para PDF via impressão. Sem valores.
+  window.exportPDF = function() {
+    if (!filteredList.length) { alert('Nenhum disco para exportar.'); return; }
+    var w = window.open('', '_blank');
+    if (!w) { alert('Permita pop-ups para exportar o PDF.'); return; }
+    var items = filteredList.map(function(lp) {
+      return '<div class="item">' +
+        (lp.photo ? '<img src="' + esc(lp.photo) + '">' : '<div class="noimg"></div>') +
+        '<div class="txt"><h2>' + esc(lp.name) + '</h2>' +
+        (lp.artist ? '<div class="artist">' + esc(lp.artist) + '</div>' : '') +
+        '<div class="meta">' + esc([lp.genre, lp.state].filter(Boolean).join(' · ')) + '</div>' +
+        (lp.desc ? '<p>' + esc(lp.desc) + '</p>' : '') +
+        '</div></div>';
+    }).join('');
+    w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Discos do Roger</title><style>' +
+      'body{font-family:Georgia,serif;color:#222;margin:20px}' +
+      'h1{text-align:center;margin:0 0 4px}.sub{text-align:center;color:#666;font-size:13px;margin-bottom:20px}' +
+      '.item{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid #ccc;page-break-inside:avoid;break-inside:avoid}' +
+      '.item img,.noimg{width:110px;height:110px;object-fit:cover;flex:none;background:#ddd;border-radius:3px}' +
+      'h2{margin:0 0 2px;font-size:17px}.artist{font-style:italic;color:#555;margin-bottom:4px}' +
+      '.meta{font-size:12px;color:#777;text-transform:uppercase;letter-spacing:1px}p{margin:6px 0 0;font-size:13px;line-height:1.4}' +
+      '</style></head><body><h1>Discos do Roger</h1><div class="sub">' + filteredList.length + ' disco' + (filteredList.length !== 1 ? 's' : '') + '</div>' +
+      items + '</body></html>');
+    w.document.close();
+    var imgs = Array.prototype.slice.call(w.document.images);
+    Promise.all(imgs.map(function(im){
+      return im.complete ? null : new Promise(function(r){ im.onload = im.onerror = r; });
+    })).then(function(){ w.focus(); w.print(); });
+  };
 
   function openDetail(key) {
     var lp = collection.find(function(l){ return l._key === key; });
