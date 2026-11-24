@@ -25,6 +25,7 @@
   .groove-line { height: 3px; background: repeating-linear-gradient(90deg, var(--amber) 0, var(--amber) 3px, transparent 3px, transparent 8px); opacity: 0.3; margin: 18px 0; }
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
   .stat-card { background: var(--groove); border: 1px solid rgba(200,135,10,0.25); border-radius: 4px; padding: 12px 8px; text-align: center; }
+  .stat-card-wide { grid-column: 1 / -1; }
   .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--amber-light); line-height: 1; }
   .stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--tan); text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
   .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 4px; color: var(--amber); text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
@@ -96,6 +97,7 @@
   <div class="stats">
     <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Discos</div></div>
     <div class="stat-card"><div class="stat-num" id="stat-genres">—</div><div class="stat-label">Gêneros</div></div>
+    <div class="stat-card stat-card-wide"><div class="stat-num" id="stat-value">—</div><div class="stat-label">Valor total da coleção</div></div>
   </div>
   <div class="section-title">Explorar Coleção</div>
   <input type="text" class="search-input" placeholder="Buscar por nome ou artista..." id="searchInput" oninput="renderCollection()">
@@ -216,6 +218,8 @@
     document.getElementById('stat-total').textContent = collection.length;
     var genres = new Set(collection.map(function(l){ return l.genre; }).filter(Boolean));
     document.getElementById('stat-genres').textContent = genres.size;
+    var total = collection.reduce(function(sum, l){ return sum + (parseFloat(l.value) || 0); }, 0);
+    document.getElementById('stat-value').textContent = 'R$ ' + total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function stateClass(s) {
